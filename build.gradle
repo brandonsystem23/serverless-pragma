@@ -1,0 +1,41 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+group = 'com.pragma'
+version = '1.2.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.amazonaws:aws-lambda-java-core:1.2.3'
+    implementation 'com.amazonaws:aws-lambda-java-events:3.11.4'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+
+    // -> NUEVA DEPENDENCIA PARA DYNAMODB SDK v2 <-
+    implementation 'software.amazon.awssdk:dynamodb:2.25.52'
+
+    compileOnly 'org.projectlombok:lombok:1.18.34'
+    annotationProcessor 'org.projectlombok:lombok:1.18.34'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+shadowJar {
+    archiveBaseName.set('users-api-java')
+    archiveClassifier.set('')
+    archiveVersion.set('1.2.0')
+}
