@@ -1,6 +1,0 @@
-{
-  "devDependencies": {
-    "serverless-offline": "^14.8.0",
-    "serverless-sam": "^0.2.0"
-  }
-}

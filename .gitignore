@@ -1,0 +1,6 @@
+.gradle/
+.idea/
+.serverless/
+build/
+*.iml
+.DS_Store
