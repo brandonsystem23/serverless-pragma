@@ -1,3 +1,4 @@
+#file: noinspection YAMLSchemaValidation
 org: brandonbr1208
 app: my-app
 service: users-api-java
@@ -26,7 +27,7 @@ provider:
           Resource: arn:aws:dynamodb:us-east-1:*:table/users
 
 package:
-  artifact: build/libs/users-api-java-1.2.0.jar
+  artifact: build/libs/users-api-java-*.jar
 
 functions:
   getUsers:
