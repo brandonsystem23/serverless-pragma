@@ -2240,5 +2240,201 @@
         }
       }
     }
+  },
+  "F:\\PRAGMA\\microservicios\\serverless-pragma\\serverless.yml": {
+    "versionFramework": "4.41.1",
+    "servicePath": "F:\\PRAGMA\\microservicios\\serverless-pragma\\serverless.yml",
+    "serviceConfigFileName": "serverless.yml",
+    "service": {
+      "org": "brandonbr1208",
+      "app": "my-app",
+      "service": "users-api-java",
+      "provider": {
+        "name": "aws",
+        "runtime": "java21",
+        "stage": "dev",
+        "region": "us-east-1",
+        "memorySize": 512,
+        "timeout": 15,
+        "deploymentMethod": "direct",
+        "environment": {
+          "TABLE_NAME": "users"
+        },
+        "iam": {
+          "role": {
+            "statements": [
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "dynamodb:Query",
+                  "dynamodb:Scan",
+                  "dynamodb:GetItem",
+                  "dynamodb:PutItem",
+                  "dynamodb:UpdateItem",
+                  "dynamodb:DeleteItem"
+                ],
+                "Resource": "arn:aws:dynamodb:us-east-1:*:table/users"
+              }
+            ]
+          }
+        },
+        "versionFunctions": true
+      },
+      "package": {
+        "artifact": "build/libs/users-api-java-1.2.0.jar",
+        "artifactsS3KeyDirname": "serverless/users-api-java/dev/code-artifacts"
+      },
+      "functions": {
+        "getUsers": {
+          "handler": "com.pragma.handler.HandlerGet",
+          "events": [
+            {
+              "httpApi": {
+                "path": "/user/list",
+                "method": "GET"
+              }
+            }
+          ],
+          "name": "users-api-java-dev-getUsers"
+        },
+        "createUser": {
+          "handler": "com.pragma.handler.HandlerCreate",
+          "events": [
+            {
+              "httpApi": {
+                "path": "/user/create",
+                "method": "POST"
+              }
+            }
+          ],
+          "name": "users-api-java-dev-createUser"
+        },
+        "updateUser": {
+          "handler": "com.pragma.handler.HandlerUpdate",
+          "events": [
+            {
+              "httpApi": {
+                "path": "/user/{id}",
+                "method": "PUT"
+              }
+            }
+          ],
+          "name": "users-api-java-dev-updateUser"
+        },
+        "deleteUser": {
+          "handler": "com.pragma.handler.HandlerDelete",
+          "events": [
+            {
+              "httpApi": {
+                "path": "/user/{id}",
+                "method": "DELETE"
+              }
+            }
+          ],
+          "name": "users-api-java-dev-deleteUser"
+        }
+      }
+    },
+    "provider": {
+      "name": "aws",
+      "runtime": "java21",
+      "stage": "dev",
+      "region": "us-east-1",
+      "memorySize": 512,
+      "timeout": 15,
+      "deploymentMethod": "direct",
+      "environment": {
+        "TABLE_NAME": "users"
+      },
+      "iam": {
+        "role": {
+          "statements": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "dynamodb:Query",
+                "dynamodb:Scan",
+                "dynamodb:GetItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem"
+              ],
+              "Resource": "arn:aws:dynamodb:us-east-1:*:table/users"
+            }
+          ]
+        }
+      },
+      "versionFunctions": true
+    },
+    "dashboard": {
+      "isEnabledForService": true,
+      "requiredAuthentication": false,
+      "orgFeaturesInUse": {
+        "providers": false,
+        "monitoring": false
+      },
+      "orgObservabilityIntegrations": null,
+      "serviceAppId": "lyZk3Hsz8gDDSxC8tp",
+      "serviceProvider": null,
+      "instanceParameters": null
+    },
+    "serviceRawFile": "org: brandonbr1208\r\napp: my-app\r\nservice: users-api-java\r\n\r\nprovider:\r\n  name: aws\r\n  runtime: java21\r\n  stage: dev\r\n  region: us-east-1\r\n  memorySize: 512\r\n  timeout: 15\r\n  deploymentMethod: direct\r\n  environment:\r\n    TABLE_NAME: users\r\n  iam:\r\n    role:\r\n      statements:\r\n        - Effect: Allow\r\n          Action:\r\n            - dynamodb:Query\r\n            - dynamodb:Scan\r\n            - dynamodb:GetItem\r\n            - dynamodb:PutItem\r\n            - dynamodb:UpdateItem\r\n            - dynamodb:DeleteItem\r\n          Resource:\r\n            - arn:aws:dynamodb:us-east-1:*:table/users\r\n\r\npackage:\r\n  artifact: build/libs/users-api-java-1.2.0.jar\r\n\r\nfunctions:\r\n  getUsers:\r\n    handler: com.pragma.handler.HandlerGet\r\n    events:\r\n      - httpApi:\r\n          path: /user/list\r\n          method: GET\r\n\r\n  createUser:\r\n    handler: com.pragma.handler.HandlerCreate\r\n    events:\r\n      - httpApi:\r\n          path: /user/create\r\n          method: POST\r\n\r\n  updateUser:\r\n    handler: com.pragma.handler.HandlerUpdate\r\n    events:\r\n      - httpApi:\r\n          path: /user/{id}\r\n          method: PUT\r\n\r\n  deleteUser:\r\n    handler: com.pragma.handler.HandlerDelete\r\n    events:\r\n      - httpApi:\r\n          path: /user/{id}\r\n          method: DELETE",
+    "command": [
+      "remove"
+    ],
+    "options": {},
+    "orgId": "399c7e1d-678c-47b6-af19-66ed0f8e0828",
+    "orgName": "brandonbr1208",
+    "userId": "3hlP64PZLBcbXnNFf7",
+    "userName": "brandonbr1208",
+    "serviceProviderAwsAccountId": "121604171970",
+    "serviceProviderAwsCfStackName": "users-api-java-dev",
+    "serviceProviderAwsCfStackId": "arn:aws:cloudformation:us-east-1:121604171970:stack/users-api-java-dev/84e5dfa0-a7b6-11f1-b918-0e2d9ac21bef",
+    "serviceProviderAwsCfStackCreated": "2026-09-03T16:42:58.202Z",
+    "serviceProviderAwsCfStackUpdated": null,
+    "serviceProviderAwsCfStackStatus": "CREATE_COMPLETE",
+    "serviceProviderAwsCfStackOutputs": [
+      {
+        "OutputKey": "DeleteUserLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:us-east-1:121604171970:function:users-api-java-dev-deleteUser:5",
+        "Description": "Current Lambda function version",
+        "ExportName": "sls-users-api-java-dev-DeleteUserLambdaFunctionQualifiedArn"
+      },
+      {
+        "OutputKey": "GetUsersLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:us-east-1:121604171970:function:users-api-java-dev-getUsers:5",
+        "Description": "Current Lambda function version",
+        "ExportName": "sls-users-api-java-dev-GetUsersLambdaFunctionQualifiedArn"
+      },
+      {
+        "OutputKey": "UpdateUserLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:us-east-1:121604171970:function:users-api-java-dev-updateUser:5",
+        "Description": "Current Lambda function version",
+        "ExportName": "sls-users-api-java-dev-UpdateUserLambdaFunctionQualifiedArn"
+      },
+      {
+        "OutputKey": "CreateUserLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:us-east-1:121604171970:function:users-api-java-dev-createUser:5",
+        "Description": "Current Lambda function version",
+        "ExportName": "sls-users-api-java-dev-CreateUserLambdaFunctionQualifiedArn"
+      },
+      {
+        "OutputKey": "HttpApiId",
+        "OutputValue": "ijsapensdd",
+        "Description": "Id of the HTTP API",
+        "ExportName": "sls-users-api-java-dev-HttpApiId"
+      },
+      {
+        "OutputKey": "ServerlessDeploymentBucketName",
+        "OutputValue": "serverless-framework-deployments-us-east-1-05b869b8-2028",
+        "ExportName": "sls-users-api-java-dev-ServerlessDeploymentBucketName"
+      },
+      {
+        "OutputKey": "HttpApiUrl",
+        "OutputValue": "https://ijsapensdd.execute-api.us-east-1.amazonaws.com",
+        "Description": "URL of the HTTP API",
+        "ExportName": "sls-users-api-java-dev-HttpApiUrl"
+      }
+    ]
   }
 }

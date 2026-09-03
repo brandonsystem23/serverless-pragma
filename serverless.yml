@@ -23,8 +23,7 @@ provider:
             - dynamodb:PutItem
             - dynamodb:UpdateItem
             - dynamodb:DeleteItem
-          Resource:
-            - arn:aws:dynamodb:us-east-1:*:table/users
+          Resource: arn:aws:dynamodb:us-east-1:*:table/users
 
 package:
   artifact: build/libs/users-api-java-1.2.0.jar
