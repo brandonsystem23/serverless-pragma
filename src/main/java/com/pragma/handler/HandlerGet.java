@@ -17,13 +17,10 @@ import java.util.Map;
 
 public class HandlerGet implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
 
-    private static final DynamoDbClient DYNAMO_DB_CLIENT =
-            DynamoDBClientProvider.getClient();
+    private static final DynamoDbClient dynamoDbClient = DynamoDBClientProvider.getClient();
 
-    private static final String TABLE_NAME =
-            System.getenv("TABLE_NAME") != null
-                    ? System.getenv("TABLE_NAME")
-                    : "users";
+    private static final String TABLE_NAME = System.getenv("TABLE_NAME") != null
+                    ? System.getenv("TABLE_NAME") : "users";
 
     @Override
     public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent event, Context context) {
@@ -33,7 +30,7 @@ public class HandlerGet implements RequestHandler<APIGatewayV2HTTPEvent, APIGate
                     .tableName(TABLE_NAME)
                     .build();
 
-            ScanResponse scanResponse = DYNAMO_DB_CLIENT.scan(scanRequest);
+            ScanResponse scanResponse = dynamoDbClient.scan(scanRequest);
 
             List<User> users = scanResponse.items().stream()
                     .map(this::toUser)
@@ -43,7 +40,7 @@ public class HandlerGet implements RequestHandler<APIGatewayV2HTTPEvent, APIGate
 
         } catch (Exception e) {
             context.getLogger().log(
-                    "Error al consultar DynamoDB: " + e.getMessage()
+                    "Error al consultar usuarios de DynamoDB: " + e.getMessage()
             );
 
             return ResponseUtil.errorResponse(500, e.getMessage());
@@ -58,9 +55,7 @@ public class HandlerGet implements RequestHandler<APIGatewayV2HTTPEvent, APIGate
         );
     }
 
-    private String getValue(
-            Map<String, AttributeValue> item,
-            String key) {
+    private String getValue(Map<String, AttributeValue> item, String key) {
 
         AttributeValue value = item.get(key);
 

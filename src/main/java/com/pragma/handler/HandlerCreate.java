@@ -15,7 +15,7 @@ import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID; // <- 1. Importa la clase UUID
+import java.util.UUID;
 
 public class HandlerCreate implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
 
@@ -57,7 +57,7 @@ public class HandlerCreate implements RequestHandler<APIGatewayV2HTTPEvent, APIG
             return ResponseUtil.jsonResponse(201, response);
 
         } catch (Exception e) {
-            context.getLogger().log("Error: " + e.getMessage());
+            context.getLogger().log("Error al crear usuario de DynamoDB: " + e.getMessage());
             return ResponseUtil.errorResponse(500, e.getMessage());
         }
     }

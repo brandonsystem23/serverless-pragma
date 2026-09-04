@@ -42,25 +42,48 @@ public class HandlerUpdate implements RequestHandler<APIGatewayV2HTTPEvent, APIG
             key.put("id", AttributeValue.builder().s(id).build());
 
 
-            Map<String, AttributeValue> expressionAttributeValues = new HashMap<>();
-            expressionAttributeValues.put(":name", AttributeValue.builder().s(newDates.getName()).build());
-            expressionAttributeValues.put(":email", AttributeValue.builder().s(newDates.getEmail()).build());
+            StringBuilder updateExpression = new StringBuilder("SET ");
 
-            UpdateItemRequest updateItemRequest = UpdateItemRequest.builder()
+            Map<String, String> expressionAttributeNames = new HashMap<>();
+
+            Map<String, AttributeValue> expressionAttributeValues = new HashMap<>();
+
+            boolean hasUpdates = false;
+
+            if (newDates.getName() != null && !newDates.getName().isBlank()) {
+                updateExpression.append("#n = :name");
+                expressionAttributeNames.put("#n", "name");
+                expressionAttributeValues.put(":name", AttributeValue.builder().s(newDates.getName()).build());
+                hasUpdates = true;
+            }
+
+            if (newDates.getEmail() != null && !newDates.getEmail().isBlank()) {
+                updateExpression.append(", email = :email");
+                expressionAttributeValues.put(":email", AttributeValue.builder().s(newDates.getEmail()).build());
+                hasUpdates = true;
+            }
+
+            if (!hasUpdates) {
+                return ResponseUtil.errorResponse(400, "Debe proporcionar al menos un campo ('name' o 'email') para actualizar.");
+            }
+
+            UpdateItemRequest.Builder updateRequestBuilder = UpdateItemRequest.builder()
                     .tableName(TABLE_NAME)
                     .key(key)
-                    .updateExpression("SET #n = :name, email = :email")
-                    .expressionAttributeNames(Map.of("#n", "name"))
-                    .expressionAttributeValues(expressionAttributeValues)
-                    .build();
+                    .updateExpression(updateExpression.toString())
+                    .expressionAttributeValues(expressionAttributeValues);
 
-            dynamoDbClient.updateItem(updateItemRequest);
+            if (!expressionAttributeNames.isEmpty()) {
+                updateRequestBuilder.expressionAttributeNames(expressionAttributeNames);
+            }
+
+            dynamoDbClient.updateItem(updateRequestBuilder.build());
 
             return ResponseUtil.jsonResponse(200, new MessageResponse("Usuario con id " + id +
                     " actualizado correctamente en DynamoDB"));
 
         } catch (Exception e) {
-            context.getLogger().log("Error al actualizar en DynamoDB: " + e.getMessage());
+            context.getLogger().log("Error al actualizar usuario de DynamoDB: " + e.getMessage());
             return ResponseUtil.errorResponse(500, e.getMessage());
         }
     }

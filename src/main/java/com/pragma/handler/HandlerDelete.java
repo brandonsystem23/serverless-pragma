@@ -43,7 +43,7 @@ public class HandlerDelete implements RequestHandler<APIGatewayV2HTTPEvent, APIG
                     " eliminado correctamente de DynamoDB"));
 
         } catch (Exception e) {
-            context.getLogger().log("Error al eliminar de DynamoDB: " + e.getMessage());
+            context.getLogger().log("Error al eliminar usuario de DynamoDB: " + e.getMessage());
             return ResponseUtil.errorResponse(500, e.getMessage());
         }
     }
