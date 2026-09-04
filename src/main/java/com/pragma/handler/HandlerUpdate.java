@@ -58,7 +58,10 @@ public class HandlerUpdate implements RequestHandler<APIGatewayV2HTTPEvent, APIG
             }
 
             if (newDates.getEmail() != null && !newDates.getEmail().isBlank()) {
-                updateExpression.append(", email = :email");
+                if (hasUpdates) {
+                    updateExpression.append(", ");
+                }
+                updateExpression.append("email = :email");
                 expressionAttributeValues.put(":email", AttributeValue.builder().s(newDates.getEmail()).build());
                 hasUpdates = true;
             }
