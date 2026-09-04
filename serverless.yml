@@ -96,13 +96,8 @@ functions:
     iam:
       role:
         statements:
-          # Únicamente puede leer y eliminar mensajes de la cola SQS
-          - Effect: Allow
-            Action:
-              - sqs:ReceiveMessage
-              - sqs:DeleteMessage
-              - sqs:GetQueueAttributes
-            Resource: arn:aws:sqs:us-east-1:121604171970:cola-pragma
+          # Únicamente puede leer y eliminar mensajes de la cola SQS - incluido en su events, no se agregara para evitar redundancia
+
           # Únicamente puede publicar en SNS
           - Effect: Allow
             Action:
