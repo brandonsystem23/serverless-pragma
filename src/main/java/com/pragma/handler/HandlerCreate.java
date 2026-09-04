@@ -5,7 +5,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pragma.dto.CreateUserResponse;
+import com.pragma.dto.UserResponse;
 import com.pragma.model.User;
 import com.pragma.util.DynamoDBClientProvider;
 import com.pragma.util.ResponseUtil;
@@ -49,7 +49,7 @@ public class HandlerCreate implements RequestHandler<APIGatewayV2HTTPEvent, APIG
 
             dynamoDbClient.putItem(putItemRequest);
 
-            CreateUserResponse response = new CreateUserResponse(
+            UserResponse response = new UserResponse(
                     "Usuario creado con éxito en DynamoDB",
                     nuevo
             );

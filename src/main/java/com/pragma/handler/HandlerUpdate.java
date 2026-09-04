@@ -5,13 +5,15 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pragma.dto.MessageResponse;
+import com.pragma.dto.UserResponse;
 import com.pragma.model.User;
 import com.pragma.util.DynamoDBClientProvider;
 import com.pragma.util.ResponseUtil;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.ReturnValue;
 import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.UpdateItemResponse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -74,20 +76,36 @@ public class HandlerUpdate implements RequestHandler<APIGatewayV2HTTPEvent, APIG
                     .tableName(TABLE_NAME)
                     .key(key)
                     .updateExpression(updateExpression.toString())
-                    .expressionAttributeValues(expressionAttributeValues);
+                    .expressionAttributeValues(expressionAttributeValues)
+                    .returnValues(ReturnValue.ALL_NEW);
 
             if (!expressionAttributeNames.isEmpty()) {
                 updateRequestBuilder.expressionAttributeNames(expressionAttributeNames);
             }
 
-            dynamoDbClient.updateItem(updateRequestBuilder.build());
+            UpdateItemResponse updateItemResponse = dynamoDbClient.updateItem(updateRequestBuilder.build());
 
-            return ResponseUtil.jsonResponse(200, new MessageResponse("Usuario con id " + id +
-                    " actualizado correctamente en DynamoDB"));
+            UserResponse response = new UserResponse(
+                    "Usuario actualizado con éxito en DynamoDB",
+                    new User(
+                            getValue(updateItemResponse.attributes(), "id"),
+                            getValue(updateItemResponse.attributes(), "name"),
+                            getValue(updateItemResponse.attributes(), "email")
+                    )
+            );
+
+            return ResponseUtil.jsonResponse(200, response);
 
         } catch (Exception e) {
             context.getLogger().log("Error al actualizar usuario de DynamoDB: " + e.getMessage());
             return ResponseUtil.errorResponse(500, e.getMessage());
         }
+    }
+
+    private String getValue(Map<String, AttributeValue> item, String key) {
+
+        AttributeValue value = item.get(key);
+
+        return value != null ? value.s() : null;
     }
 }
