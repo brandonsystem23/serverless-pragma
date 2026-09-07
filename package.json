@@ -1,0 +1,8 @@
+{
+  "name": "serverless-pragma",
+  "version": "1.0.0",
+  "description": "Serverless deployment for Java",
+  "dependencies": {
+    "serverless": "^3.38.0"
+  }
+}
