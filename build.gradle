@@ -4,12 +4,20 @@ plugins {
 }
 
 group = 'com.pragma'
-version = '1.2.0'
+version = '1.6.0'
 
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
+}
+
+jar {
+    enabled = false
+}
+
+shadowJar {
+    archiveClassifier.set('')
 }
 
 repositories {
@@ -24,6 +32,12 @@ dependencies {
     // -> NUEVA DEPENDENCIA PARA DYNAMODB SDK v2 <-
     implementation 'software.amazon.awssdk:dynamodb:2.25.52'
 
+    // SQS SDK v2 alineado a la misma versión
+    implementation 'software.amazon.awssdk:sqs:2.25.52'
+
+    //SNS SDK
+    implementation 'software.amazon.awssdk:sns:2.25.52'
+
     compileOnly 'org.projectlombok:lombok:1.18.34'
     annotationProcessor 'org.projectlombok:lombok:1.18.34'
 
@@ -34,8 +48,3 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-shadowJar {
-    archiveBaseName.set('users-api-java')
-    archiveClassifier.set('')
-    archiveVersion.set('1.2.0')
-}

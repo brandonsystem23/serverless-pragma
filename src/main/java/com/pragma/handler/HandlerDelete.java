@@ -17,8 +17,7 @@ import java.util.Map;
 public class HandlerDelete implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
 
     private static final DynamoDbClient dynamoDbClient = DynamoDBClientProvider.getClient();
-    private static final String TABLE_NAME = System.getenv("TABLE_NAME") != null ?
-            System.getenv("TABLE_NAME") : "users";
+    private static final String TABLE_NAME = System.getenv("TABLE_NAME");
 
     @Override
     public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent event, Context context) {
@@ -43,7 +42,7 @@ public class HandlerDelete implements RequestHandler<APIGatewayV2HTTPEvent, APIG
                     " eliminado correctamente de DynamoDB"));
 
         } catch (Exception e) {
-            context.getLogger().log("Error al eliminar de DynamoDB: " + e.getMessage());
+            context.getLogger().log("Error al eliminar usuario de DynamoDB: " + e.getMessage());
             return ResponseUtil.errorResponse(500, e.getMessage());
         }
     }
