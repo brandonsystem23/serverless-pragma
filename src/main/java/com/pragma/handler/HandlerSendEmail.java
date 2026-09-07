@@ -14,8 +14,7 @@ public class HandlerSendEmail implements RequestHandler<SQSEvent, Void> {
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final SnsClient snsClient = SnsClientProvider.getClient();
 
-    private static final String TOPIC_ARN = System.getenv("TOPIC_ARN") != null ?
-            System.getenv("TOPIC_ARN") : "arn:aws:sns:us-east-1:121604171970:user-events-topic";
+    private static final String TOPIC_ARN = System.getenv("TOPIC_ARN");
 
     @Override
     public Void handleRequest(SQSEvent event, Context context) {
@@ -26,14 +25,18 @@ public class HandlerSendEmail implements RequestHandler<SQSEvent, Void> {
 
                 User user = MAPPER.readValue(body, User.class);
 
-                String formattedMessage = String.format(
-                        "¡Hola!\n\nSe ha creado un usuario nuevo exitosamente.\n\n" +
-                                "• Nombre: %s\n" +
-                                "• Correo: %s\n" +
-                                "• ID: %s\n\n" +
-                                "¡Bienvenido a la plataforma!",
-                        user.getName(), user.getEmail(), user.getId()
-                );
+                String formattedMessage = """
+                                        ¡Hola!
+      
+                                        Se ha creado un usuario nuevo exitosamente.
+       
+                                        • Nombre: %s
+                                        • Correo: %s
+                                        • ID: %s
+        
+                                        ¡Bienvenido a la plataforma!
+                                        """
+                        .formatted(user.getName(), user.getEmail(), user.getId());
 
                 context.getLogger().log("Procesando usuario para notificar vía SNS: " + user.getEmail()
                         + " | Nombre: " + user.getName());

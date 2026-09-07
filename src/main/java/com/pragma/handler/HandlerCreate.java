@@ -26,11 +26,9 @@ public class HandlerCreate implements RequestHandler<APIGatewayV2HTTPEvent, APIG
     private static final DynamoDbClient dynamoDbClient = DynamoDBClientProvider.getClient();
     private static final SqsClient sqsClient = SqsClientProvider.getClient();
 
-    private static final String QUEUE_URL = System.getenv("QUEUE_URL") != null ?
-            System.getenv("QUEUE_URL") : "https://sqs.us-east-1.amazonaws.com/121604171970/cola-pragma";
+    private static final String QUEUE_URL = System.getenv("QUEUE_URL");
 
-    private static final String TABLE_NAME = System.getenv("TABLE_NAME") != null ?
-            System.getenv("TABLE_NAME") : "users";
+    private static final String TABLE_NAME = System.getenv("TABLE_NAME");
 
     @Override
     public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent event, Context context) {

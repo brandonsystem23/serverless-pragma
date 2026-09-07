@@ -22,8 +22,7 @@ public class HandlerUpdate implements RequestHandler<APIGatewayV2HTTPEvent, APIG
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final DynamoDbClient dynamoDbClient = DynamoDBClientProvider.getClient();
-    private static final String TABLE_NAME = System.getenv("TABLE_NAME") != null ?
-            System.getenv("TABLE_NAME") : "users";
+    private static final String TABLE_NAME = System.getenv("TABLE_NAME");
 
     @Override
     public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent event, Context context) {

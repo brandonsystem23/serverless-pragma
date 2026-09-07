@@ -4,12 +4,20 @@ plugins {
 }
 
 group = 'com.pragma'
-version = '1.4.0'
+version = '1.6.0'
 
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
+}
+
+jar {
+    enabled = false
+}
+
+shadowJar {
+    archiveClassifier.set('')
 }
 
 repositories {
@@ -40,8 +48,3 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-shadowJar {
-    archiveBaseName.set('users-api-java')
-    archiveClassifier.set('')
-    archiveVersion.set('1.4.0')
-}
