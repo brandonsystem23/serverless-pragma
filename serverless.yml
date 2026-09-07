@@ -33,7 +33,7 @@ functions:
               - dynamodb:Scan
               - dynamodb:GetItem
             Resource:
-              - !GetAtt UsersTable.Arn
+              - arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/users
 
   createUser:
     handler: com.pragma.handler.HandlerCreate
@@ -49,7 +49,7 @@ functions:
               - dynamodb:PutItem
               - dynamodb:UpdateItem
             Resource:
-              - !GetAtt UsersTable.Arn
+              - arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/users
 
   updateUser:
     handler: com.pragma.handler.HandlerUpdate
@@ -65,7 +65,7 @@ functions:
               - dynamodb:UpdateItem
               - dynamodb:GetItem
             Resource:
-              - !GetAtt UsersTable.Arn
+              - arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/users
 
   deleteUser:
     handler: com.pragma.handler.HandlerDelete
@@ -81,7 +81,7 @@ functions:
               - dynamodb:DeleteItem
               - dynamodb:GetItem
             Resource:
-              - !GetAtt UsersTable.Arn
+              - arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/users
 
 resources:
   Resources:
