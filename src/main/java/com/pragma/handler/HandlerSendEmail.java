@@ -12,9 +12,17 @@ import software.amazon.awssdk.services.sns.model.PublishRequest;
 public class HandlerSendEmail implements RequestHandler<SQSEvent, Void> {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    private static final SnsClient snsClient = SnsClientProvider.getClient();
-
     private static final String TOPIC_ARN = System.getenv("TOPIC_ARN");
+
+    private final SnsClient snsClient;
+
+    public HandlerSendEmail() {
+        this(SnsClientProvider.getClient());
+    }
+
+    HandlerSendEmail(SnsClient snsClient) {
+        this.snsClient = snsClient;
+    }
 
     @Override
     public Void handleRequest(SQSEvent event, Context context) {

@@ -10,17 +10,24 @@ public final class ResponseUtil {
     public static final String CONTENT_TYPE = "Content-Type";
     public static final String APPLICATION_JSON = "application/json";
 
-    private ResponseUtil() {
+    static ObjectMapper mapper = new ObjectMapper();
 
+    private ResponseUtil() {
     }
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    static void setMapper(ObjectMapper objectMapper) {
+        mapper = objectMapper;
+    }
+
+    static void resetMapper() {
+        mapper = new ObjectMapper();
+    }
 
     public static APIGatewayV2HTTPResponse jsonResponse(int statusCode, Object body) {
         APIGatewayV2HTTPResponse response = new APIGatewayV2HTTPResponse();
         try {
             response.setStatusCode(statusCode);
-            response.setBody(MAPPER.writeValueAsString(body));
+            response.setBody(mapper.writeValueAsString(body));
             response.setHeaders(Collections.singletonMap(CONTENT_TYPE, APPLICATION_JSON));
         } catch (Exception e) {
             response.setStatusCode(500);

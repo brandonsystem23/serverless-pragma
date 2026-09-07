@@ -17,15 +17,21 @@ import java.util.Map;
 
 public class HandlerGet implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
 
-    private static final DynamoDbClient dynamoDbClient = DynamoDBClientProvider.getClient();
-
     private static final String TABLE_NAME = System.getenv("TABLE_NAME");
+
+    private final DynamoDbClient dynamoDbClient;
+
+    public HandlerGet() {
+        this(DynamoDBClientProvider.getClient());
+    }
+
+    HandlerGet(DynamoDbClient dynamoDbClient) {
+        this.dynamoDbClient = dynamoDbClient;
+    }
 
     @Override
     public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent event, Context context) {
-
         try {
-
             ScanRequest scanRequest = ScanRequest.builder()
                     .tableName(TABLE_NAME)
                     .build();
@@ -40,7 +46,6 @@ public class HandlerGet implements RequestHandler<APIGatewayV2HTTPEvent, APIGate
 
         } catch (Exception e) {
             context.getLogger().log("Error al consultar usuarios de DynamoDB: " + e.getMessage());
-
             return ResponseUtil.errorResponse(500, e.getMessage());
         }
     }
@@ -54,9 +59,7 @@ public class HandlerGet implements RequestHandler<APIGatewayV2HTTPEvent, APIGate
     }
 
     private String getValue(Map<String, AttributeValue> item, String key) {
-
         AttributeValue value = item.get(key);
-
         return value != null ? value.s() : null;
     }
 }

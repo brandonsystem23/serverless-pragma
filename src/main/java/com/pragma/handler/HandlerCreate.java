@@ -8,8 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pragma.dto.UserResponse;
 import com.pragma.model.User;
 import com.pragma.util.DynamoDBClientProvider;
-import com.pragma.util.SqsClientProvider;
 import com.pragma.util.ResponseUtil;
+import com.pragma.util.SqsClientProvider;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
@@ -23,12 +23,20 @@ import java.util.UUID;
 public class HandlerCreate implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    private static final DynamoDbClient dynamoDbClient = DynamoDBClientProvider.getClient();
-    private static final SqsClient sqsClient = SqsClientProvider.getClient();
-
     private static final String QUEUE_URL = System.getenv("QUEUE_URL");
-
     private static final String TABLE_NAME = System.getenv("TABLE_NAME");
+
+    private final DynamoDbClient dynamoDbClient;
+    private final SqsClient sqsClient;
+
+    public HandlerCreate() {
+        this(DynamoDBClientProvider.getClient(), SqsClientProvider.getClient());
+    }
+
+    HandlerCreate(DynamoDbClient dynamoDbClient, SqsClient sqsClient) {
+        this.dynamoDbClient = dynamoDbClient;
+        this.sqsClient = sqsClient;
+    }
 
     @Override
     public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent event, Context context) {
