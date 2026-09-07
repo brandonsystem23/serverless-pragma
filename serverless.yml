@@ -19,7 +19,7 @@ provider:
       Ref: UserEventsTopic
 
 package:
-  artifact: build/libs/users-api-java-1.5.0.jar
+  artifact: build/libs/users-api-java-1.3.0.jar
 
 functions:
   getUsers:
