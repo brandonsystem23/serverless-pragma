@@ -7,28 +7,13 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pragma.dto.UserResponse;
 import com.pragma.model.User;
-import com.pragma.util.DynamoDBClientProvider;
-import com.pragma.util.SqsClientProvider;
 import com.pragma.util.ResponseUtil;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
-import software.amazon.awssdk.services.sqs.SqsClient;
-import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
-
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 public class HandlerCreate implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    private static final DynamoDbClient dynamoDbClient = DynamoDBClientProvider.getClient();
-    private static final SqsClient sqsClient = SqsClientProvider.getClient();
 
-    private static final String QUEUE_URL = System.getenv("QUEUE_URL");
-
-    private static final String TABLE_NAME = System.getenv("TABLE_NAME");
 
     @Override
     public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent event, Context context) {
@@ -41,26 +26,6 @@ public class HandlerCreate implements RequestHandler<APIGatewayV2HTTPEvent, APIG
 
             String userId = UUID.randomUUID().toString();
             nuevo.setId(userId);
-
-            Map<String, AttributeValue> itemValues = new HashMap<>();
-            itemValues.put("id", AttributeValue.builder().s(userId).build());
-            itemValues.put("name", AttributeValue.builder().s(nuevo.getName()).build());
-            itemValues.put("email", AttributeValue.builder().s(nuevo.getEmail()).build());
-
-            PutItemRequest putItemRequest = PutItemRequest.builder()
-                    .tableName(TABLE_NAME)
-                    .item(itemValues)
-                    .build();
-
-            dynamoDbClient.putItem(putItemRequest);
-
-            String userJson = MAPPER.writeValueAsString(nuevo);
-            SendMessageRequest sendMessageRequest = SendMessageRequest.builder()
-                    .queueUrl(QUEUE_URL)
-                    .messageBody(userJson)
-                    .build();
-
-            sqsClient.sendMessage(sendMessageRequest);
 
             UserResponse response = new UserResponse(
                     "Usuario creado con éxito en DynamoDB y encolado en SQS",
