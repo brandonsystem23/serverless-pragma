@@ -13,13 +13,9 @@ provider:
   deploymentMethod: direct
   environment:
     TABLE_NAME: users
-    QUEUE_URL:
-      Ref: PragmaQueue
-    TOPIC_ARN:
-      Ref: UserEventsTopic
 
 package:
-  artifact: build/libs/users-api-java-1.5.0.jar
+  artifact: build/libs/users-api-java-1.2.0.jar
 
 functions:
   getUsers:
@@ -54,11 +50,6 @@ functions:
               - dynamodb:UpdateItem
             Resource:
               - !GetAtt UsersTable.Arn
-          - Effect: Allow
-            Action:
-              - sqs:SendMessage
-            Resource:
-              - !GetAtt PragmaQueue.Arn
 
   updateUser:
     handler: com.pragma.handler.HandlerUpdate
@@ -92,21 +83,6 @@ functions:
             Resource:
               - !GetAtt UsersTable.Arn
 
-  sendEmail:
-    handler: com.pragma.handler.HandlerSendEmail
-    events:
-      - sqs:
-          arn: !GetAtt PragmaQueue.Arn
-          batchSize: 1
-    iam:
-      role:
-        statements:
-          - Effect: Allow
-            Action:
-              - sns:Publish
-            Resource:
-              - !Ref UserEventsTopic
-
 resources:
   Resources:
     # 1. Tabla DynamoDB
@@ -121,66 +97,3 @@ resources:
         KeySchema:
           - AttributeName: id
             KeyType: HASH
-
-    # 2. Cola SQS con su política de acceso exacta
-    PragmaQueue:
-      Type: AWS::SQS::Queue
-      Properties:
-        QueueName: cola-pragma
-
-    PragmaQueuePolicy:
-      Type: AWS::SQS::QueuePolicy
-      Properties:
-        Queues:
-          - !Ref PragmaQueue
-        PolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-            - Sid: AllowCrearUsuarioLambdaToSendMessages
-              Effect: Allow
-              Principal:
-                Service: lambda.amazonaws.com
-              Action: sqs:SendMessage
-              Resource: !GetAtt PragmaQueue.Arn
-              Condition:
-                ArnEquals:
-                  aws:SourceArn: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${self:service}-${self:provider.stage}-createUser
-            - Sid: AllowEnviarCorreoLambdaToConsumeMessages
-              Effect: Allow
-              Principal:
-                Service: lambda.amazonaws.com
-              Action:
-                - sqs:ReceiveMessage
-                - sqs:DeleteMessage
-                - sqs:GetQueueAttributes
-              Resource: !GetAtt PragmaQueue.Arn
-              Condition:
-                ArnEquals:
-                  aws:SourceArn: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${self:service}-${self:provider.stage}-sendEmail
-
-    # 3. Tópico SNS, su política de acceso y suscripción de correo
-    UserEventsTopic:
-      Type: AWS::SNS::Topic
-      Properties:
-        TopicName: user-events-topic
-        Subscription:
-          - Protocol: email
-            Endpoint: brandonbr1208@gmail.com
-
-    UserEventsTopicPolicy:
-      Type: AWS::SNS::TopicPolicy
-      Properties:
-        Topics:
-          - !Ref UserEventsTopic
-        PolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-            - Sid: AllowSendEmailLambdaToPublishToSNS
-              Effect: Allow
-              Principal:
-                Service: lambda.amazonaws.com
-              Action: SNS:Publish
-              Resource: !Ref UserEventsTopic
-              Condition:
-                ArnEquals:
-                  aws:SourceArn: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${self:service}-${self:provider.stage}-sendEmail
