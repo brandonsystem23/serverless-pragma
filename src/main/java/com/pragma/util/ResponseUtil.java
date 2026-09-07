@@ -14,13 +14,21 @@ public final class ResponseUtil {
 
     }
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    static ObjectMapper mapper = new ObjectMapper();
+
+    static void setMapper(ObjectMapper objectMapper) {
+        mapper = objectMapper;
+    }
+
+    static void resetMapper() {
+        mapper = new ObjectMapper();
+    }
 
     public static APIGatewayV2HTTPResponse jsonResponse(int statusCode, Object body) {
         APIGatewayV2HTTPResponse response = new APIGatewayV2HTTPResponse();
         try {
             response.setStatusCode(statusCode);
-            response.setBody(MAPPER.writeValueAsString(body));
+            response.setBody(mapper.writeValueAsString(body));
             response.setHeaders(Collections.singletonMap(CONTENT_TYPE, APPLICATION_JSON));
         } catch (Exception e) {
             response.setStatusCode(500);

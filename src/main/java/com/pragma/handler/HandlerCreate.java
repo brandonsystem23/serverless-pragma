@@ -35,7 +35,7 @@ public class HandlerCreate implements RequestHandler<APIGatewayV2HTTPEvent, APIG
             return ResponseUtil.jsonResponse(201, response);
 
         } catch (Exception e) {
-            context.getLogger().log("Error al crear usuario o enviar a SQS: " + e.getMessage());
+            context.getLogger().log("Error al deserealizar: " + e.getMessage());
             return ResponseUtil.errorResponse(500, e.getMessage());
         }
     }

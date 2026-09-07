@@ -42,7 +42,7 @@ public class HandlerUpdate implements RequestHandler<APIGatewayV2HTTPEvent, APIG
             return ResponseUtil.jsonResponse(200, response);
 
         } catch (Exception e) {
-            context.getLogger().log("Error al actualizar usuario de DynamoDB: " + e.getMessage());
+            context.getLogger().log("Error al deserealizar: " + e.getMessage());
             return ResponseUtil.errorResponse(500, e.getMessage());
         }
     }

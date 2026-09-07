@@ -13,9 +13,6 @@ public class HandlerGet implements RequestHandler<APIGatewayV2HTTPEvent, APIGate
 
     @Override
     public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent event, Context context) {
-
-        try {
-
             List<User> users = List.of(
                     new User("f7ef33fe-2fbc-47e5-9ef3-0fccb3214e18", "Brandon Briones", "brandonbr1208@gmail.com"),
                     new User("5962eda9-f602-4788-a65c-2f00456168a1", "Carlos Ruiz", "carlos1234@gmail.com"),
@@ -24,10 +21,5 @@ public class HandlerGet implements RequestHandler<APIGatewayV2HTTPEvent, APIGate
 
             return ResponseUtil.jsonResponse(200, users);
 
-        } catch (Exception e) {
-            context.getLogger().log("Error al consultar usuarios de DynamoDB: " + e.getMessage());
-
-            return ResponseUtil.errorResponse(500, e.getMessage());
-        }
     }
 }

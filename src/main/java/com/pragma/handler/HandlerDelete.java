@@ -9,10 +9,9 @@ import com.pragma.util.ResponseUtil;
 
 public class HandlerDelete implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
 
-
     @Override
     public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent event, Context context) {
-        try {
+
             String id = (event.getPathParameters() != null) ? event.getPathParameters().get("id") : null;
 
             if (id == null || id.isBlank()) {
@@ -21,10 +20,5 @@ public class HandlerDelete implements RequestHandler<APIGatewayV2HTTPEvent, APIG
 
             return ResponseUtil.jsonResponse(200, new MessageResponse("Usuario con id " + id +
                     " eliminado correctamente de DynamoDB"));
-
-        } catch (Exception e) {
-            context.getLogger().log("Error al eliminar usuario de DynamoDB: " + e.getMessage());
-            return ResponseUtil.errorResponse(500, e.getMessage());
-        }
     }
 }
