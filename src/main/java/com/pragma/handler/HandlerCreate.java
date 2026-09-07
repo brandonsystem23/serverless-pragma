@@ -20,9 +20,17 @@ import java.util.UUID;
 public class HandlerCreate implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    private static final DynamoDbClient dynamoDbClient = DynamoDBClientProvider.getClient();
-
     private static final String TABLE_NAME = System.getenv("TABLE_NAME");
+
+    private final DynamoDbClient dynamoDbClient;
+
+    public HandlerCreate() {
+        this(DynamoDBClientProvider.getClient());
+    }
+
+    HandlerCreate(DynamoDbClient dynamoDbClient) {
+        this.dynamoDbClient = dynamoDbClient;
+    }
 
     @Override
     public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent event, Context context) {

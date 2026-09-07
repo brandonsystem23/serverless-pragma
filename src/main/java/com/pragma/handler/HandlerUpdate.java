@@ -21,8 +21,17 @@ import java.util.Map;
 public class HandlerUpdate implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    private static final DynamoDbClient dynamoDbClient = DynamoDBClientProvider.getClient();
     private static final String TABLE_NAME = System.getenv("TABLE_NAME");
+
+    private final DynamoDbClient dynamoDbClient;
+
+    public HandlerUpdate() {
+        this(DynamoDBClientProvider.getClient());
+    }
+
+    HandlerUpdate(DynamoDbClient dynamoDbClient) {
+        this.dynamoDbClient = dynamoDbClient;
+    }
 
     @Override
     public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent event, Context context) {
@@ -42,11 +51,8 @@ public class HandlerUpdate implements RequestHandler<APIGatewayV2HTTPEvent, APIG
             Map<String, AttributeValue> key = new HashMap<>();
             key.put("id", AttributeValue.builder().s(id).build());
 
-
             StringBuilder updateExpression = new StringBuilder("SET ");
-
             Map<String, String> expressionAttributeNames = new HashMap<>();
-
             Map<String, AttributeValue> expressionAttributeValues = new HashMap<>();
 
             boolean hasUpdates = false;
@@ -102,9 +108,7 @@ public class HandlerUpdate implements RequestHandler<APIGatewayV2HTTPEvent, APIG
     }
 
     private String getValue(Map<String, AttributeValue> item, String key) {
-
         AttributeValue value = item.get(key);
-
         return value != null ? value.s() : null;
     }
 }

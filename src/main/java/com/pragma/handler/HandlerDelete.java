@@ -16,8 +16,17 @@ import java.util.Map;
 
 public class HandlerDelete implements RequestHandler<APIGatewayV2HTTPEvent, APIGatewayV2HTTPResponse> {
 
-    private static final DynamoDbClient dynamoDbClient = DynamoDBClientProvider.getClient();
     private static final String TABLE_NAME = System.getenv("TABLE_NAME");
+
+    private final DynamoDbClient dynamoDbClient;
+
+    public HandlerDelete() {
+        this(DynamoDBClientProvider.getClient());
+    }
+
+    HandlerDelete(DynamoDbClient dynamoDbClient) {
+        this.dynamoDbClient = dynamoDbClient;
+    }
 
     @Override
     public APIGatewayV2HTTPResponse handleRequest(APIGatewayV2HTTPEvent event, Context context) {
