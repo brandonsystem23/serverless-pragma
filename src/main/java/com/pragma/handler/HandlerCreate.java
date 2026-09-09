@@ -57,14 +57,14 @@ public class HandlerCreate implements RequestHandler<APIGatewayV2HTTPEvent, APIG
             dynamoDbClient.putItem(putItemRequest);
 
             UserResponse response = new UserResponse(
-                    "Usuario creado con éxito en DynamoDB y encolado en SQS",
+                    "Usuario creado con éxito en DynamoDB",
                     nuevo
             );
 
             return ResponseUtil.jsonResponse(201, response);
 
         } catch (Exception e) {
-            context.getLogger().log("Error al crear usuario o enviar a SQS: " + e.getMessage());
+            context.getLogger().log("Error al crear usuario: " + e.getMessage());
             return ResponseUtil.errorResponse(500, e.getMessage());
         }
     }

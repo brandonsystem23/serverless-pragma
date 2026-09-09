@@ -1,0 +1,303 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Infraestructura base con API Gateway y Lambdas (DynamoDB)
+
+Parameters:
+  Stage:
+    Type: String
+    Default: dev
+    Description: Etapa de despliegue
+
+Resources:
+  # ----------------------------------------------------
+  # 1. API GATEWAY (HTTP API)
+  # ----------------------------------------------------
+  HttpApi:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: !Sub "users-api-${Stage}"
+      ProtocolType: HTTP
+
+  HttpApiStage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId: !Ref HttpApi
+      StageName: '$default'
+      AutoDeploy: true
+
+  # ----------------------------------------------------
+  # 2. DYNAMODB TABLE
+  # ----------------------------------------------------
+  UsersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: users
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+
+  # ----------------------------------------------------
+  # 3. ROLES IAM INDEPENDIENTES CON PERMISOS DE DYNAMODB
+  # ----------------------------------------------------
+
+  # Rol para getUsers (Solo lectura: GetItem, Query, Scan)
+  GetUsersExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: GetUsersDynamoDBPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                Resource: !GetAtt UsersTable.Arn
+
+  # Rol para createUser (Escritura: PutItem)
+  CreateUserExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: CreateUserDynamoDBPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                Resource: !GetAtt UsersTable.Arn
+
+  # Rol para updateUser (Actualización: UpdateItem, GetItem)
+  UpdateUserExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: UpdateUserDynamoDBPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:UpdateItem
+                  - dynamodb:GetItem
+                Resource: !GetAtt UsersTable.Arn
+
+  # Rol para deleteUser (Eliminación: DeleteItem, GetItem)
+  DeleteUserExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: DeleteUserDynamoDBPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:DeleteItem
+                  - dynamodb:GetItem
+                Resource: !GetAtt UsersTable.Arn
+
+  # ----------------------------------------------------
+  # 4. FUNCIONES LAMBDA
+  # ----------------------------------------------------
+  GetUsersFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub "users-api-java-${Stage}-getUsers"
+      Handler: com.pragma.handler.HandlerGet
+      Runtime: java21
+      MemorySize: 512
+      Timeout: 15
+      Role: !GetAtt GetUsersExecutionRole.Arn
+      Code:
+        S3Bucket: users-api-java-jar
+        S3Key: users-api-java-1.2.0.jar
+      Environment:
+        Variables:
+          TABLE_NAME: users
+
+  CreateUserFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub "users-api-java-${Stage}-createUser"
+      Handler: com.pragma.handler.HandlerCreate
+      Runtime: java21
+      MemorySize: 512
+      Timeout: 15
+      Role: !GetAtt CreateUserExecutionRole.Arn
+      Code:
+        S3Bucket: users-api-java-jar
+        S3Key: users-api-java-1.2.0.jar
+      Environment:
+        Variables:
+          TABLE_NAME: users
+
+  UpdateUserFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub "users-api-java-${Stage}-updateUser"
+      Handler: com.pragma.handler.HandlerUpdate
+      Runtime: java21
+      MemorySize: 512
+      Timeout: 15
+      Role: !GetAtt UpdateUserExecutionRole.Arn
+      Code:
+        S3Bucket: users-api-java-jar
+        S3Key: users-api-java-1.2.0.jar
+      Environment:
+        Variables:
+          TABLE_NAME: users
+
+  DeleteUserFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub "users-api-java-${Stage}-deleteUser"
+      Handler: com.pragma.handler.HandlerDelete
+      Runtime: java21
+      MemorySize: 512
+      Timeout: 15
+      Role: !GetAtt DeleteUserExecutionRole.Arn
+      Code:
+        S3Bucket: users-api-java-jar
+        S3Key: users-api-java-1.2.0.jar
+      Environment:
+        Variables:
+          TABLE_NAME: users
+
+  # ----------------------------------------------------
+  # 5. INTEGRACIONES Y RUTAS DE API GATEWAY
+  # ----------------------------------------------------
+  GetUsersIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref HttpApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !GetAtt GetUsersFunction.Arn
+      PayloadFormatVersion: '2.0'
+
+  GetUsersRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref HttpApi
+      RouteKey: 'GET /user/list'
+      Target: !Join [ '/', [ 'integrations', !Ref GetUsersIntegration ] ]
+
+  GetUsersLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref GetUsersFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${HttpApi}/*/*/user/list"
+
+  CreateUserIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref HttpApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !GetAtt CreateUserFunction.Arn
+      PayloadFormatVersion: '2.0'
+
+  CreateUserRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref HttpApi
+      RouteKey: 'POST /user/create'
+      Target: !Join [ '/', [ 'integrations', !Ref CreateUserIntegration ] ]
+
+  CreateUserLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref CreateUserFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${HttpApi}/*/*/user/create"
+
+  UpdateUserIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref HttpApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !GetAtt UpdateUserFunction.Arn
+      PayloadFormatVersion: '2.0'
+
+  UpdateUserRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref HttpApi
+      RouteKey: 'PUT /user/{id}'
+      Target: !Join [ '/', [ 'integrations', !Ref UpdateUserIntegration ] ]
+
+  UpdateUserLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref UpdateUserFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${HttpApi}/*/*/user/*"
+
+  DeleteUserIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref HttpApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !GetAtt DeleteUserFunction.Arn
+      PayloadFormatVersion: '2.0'
+
+  DeleteUserRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref HttpApi
+      RouteKey: 'DELETE /user/{id}'
+      Target: !Join [ '/', [ 'integrations', !Ref DeleteUserIntegration ] ]
+
+  DeleteUserLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref DeleteUserFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${HttpApi}/*/*/user/*"

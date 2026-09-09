@@ -70,7 +70,7 @@ class HandlerCreateTest {
         APIGatewayV2HTTPResponse response = handler.handleRequest(event, context);
 
         assertEquals(201, response.getStatusCode());
-        assertTrue(response.getBody().contains("Usuario creado con éxito en DynamoDB y encolado en SQS"));
+        assertTrue(response.getBody().contains("Usuario creado con éxito en DynamoDB"));
         assertTrue(response.getBody().contains("Juan Perez"));
         assertTrue(response.getBody().contains("juan@example.com"));
         assertTrue(response.getBody().contains("\"id\""));
@@ -98,7 +98,7 @@ class HandlerCreateTest {
         assertTrue(response.getBody().contains("error"));
         assertEquals("application/json", response.getHeaders().get("Content-Type"));
 
-        verify(logger).log(contains("Error al crear usuario o enviar a SQS"));
+        verify(logger).log(contains("Error al crear usuario"));
     }
 
     @Test
@@ -129,6 +129,6 @@ class HandlerCreateTest {
         assertTrue(response.getBody().contains("Dynamo error"));
         assertEquals("application/json", response.getHeaders().get("Content-Type"));
 
-        verify(logger).log(contains("Error al crear usuario o enviar a SQS"));
+        verify(logger).log(contains("Error al crear usuario"));
     }
 }
