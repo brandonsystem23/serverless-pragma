@@ -31,7 +31,7 @@ public class HandlerUpdate implements RequestHandler<APIGatewayV2HTTPEvent, APIG
 
 
             UserResponse response = new UserResponse(
-                    "Usuario actualizado con éxito en DynamoDB",
+                    "Usuario actualizado con éxito",
                     new User(
                             id,
                             newDates.getName(),

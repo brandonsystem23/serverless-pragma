@@ -56,7 +56,7 @@ class HandlerUpdateTest {
         APIGatewayV2HTTPResponse response = handler.handleRequest(event, context);
 
         assertEquals(200, response.getStatusCode());
-        assertTrue(response.getBody().contains("Usuario actualizado con éxito en DynamoDB"));
+        assertTrue(response.getBody().contains("Usuario actualizado con éxito"));
         assertTrue(response.getBody().contains("\"id\":\"999\""));
         assertTrue(response.getBody().contains("Ana Maria"));
         assertTrue(response.getBody().contains("ana@example.com"));

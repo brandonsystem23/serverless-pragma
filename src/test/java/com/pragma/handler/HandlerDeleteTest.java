@@ -47,7 +47,7 @@ class HandlerDeleteTest {
         APIGatewayV2HTTPResponse response = handler.handleRequest(event, context);
 
         assertEquals(200, response.getStatusCode());
-        assertTrue(response.getBody().contains("Usuario con id 123 eliminado correctamente de DynamoDB"));
+        assertTrue(response.getBody().contains("Usuario con id 123 eliminado correctamente"));
         assertEquals("application/json", response.getHeaders().get("Content-Type"));
     }
 }

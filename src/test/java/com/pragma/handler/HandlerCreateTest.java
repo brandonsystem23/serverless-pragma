@@ -52,7 +52,7 @@ class HandlerCreateTest {
         APIGatewayV2HTTPResponse response = handler.handleRequest(event, context);
 
         assertEquals(201, response.getStatusCode());
-        assertTrue(response.getBody().contains("Usuario creado con éxito en DynamoDB y encolado en SQS"));
+        assertTrue(response.getBody().contains("Usuario creado con éxito"));
         assertTrue(response.getBody().contains("Juan Perez"));
         assertTrue(response.getBody().contains("juan@example.com"));
         assertTrue(response.getBody().contains("\"id\""));

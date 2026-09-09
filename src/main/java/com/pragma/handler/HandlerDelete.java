@@ -19,6 +19,6 @@ public class HandlerDelete implements RequestHandler<APIGatewayV2HTTPEvent, APIG
             }
 
             return ResponseUtil.jsonResponse(200, new MessageResponse("Usuario con id " + id +
-                    " eliminado correctamente de DynamoDB"));
+                    " eliminado correctamente"));
     }
 }

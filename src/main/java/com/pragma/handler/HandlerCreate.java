@@ -28,7 +28,7 @@ public class HandlerCreate implements RequestHandler<APIGatewayV2HTTPEvent, APIG
             nuevo.setId(userId);
 
             UserResponse response = new UserResponse(
-                    "Usuario creado con éxito en DynamoDB y encolado en SQS",
+                    "Usuario creado con éxito",
                     nuevo
             );
 
