@@ -1,11 +1,11 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Infraestructura nativa en CloudFormation con roles de IAM independientes por cada función Lambda
+Description: Infraestructura base con API Gateway y Lambdas (DynamoDB, SQS y SNS)
 
 Parameters:
   Stage:
     Type: String
     Default: dev
-    Description: Etapa de despliegue (ej. dev, prod)
+    Description: Etapa de despliegue
 
 Resources:
   # ----------------------------------------------------
@@ -167,7 +167,7 @@ Resources:
       Role: !GetAtt GetUsersExecutionRole.Arn
       Code:
         S3Bucket: users-api-java-jar
-        S3Key: users-api-java-1.4.0.jar
+        S3Key: users-api-java-1.3.0.jar
       Environment:
         Variables:
           TABLE_NAME: users
@@ -183,7 +183,7 @@ Resources:
       Role: !GetAtt CreateUserExecutionRole.Arn
       Code:
         S3Bucket: users-api-java-jar
-        S3Key: users-api-java-1.4.0.jar
+        S3Key: users-api-java-1.3.0.jar
       Environment:
         Variables:
           TABLE_NAME: users
@@ -200,7 +200,7 @@ Resources:
       Role: !GetAtt UpdateUserExecutionRole.Arn
       Code:
         S3Bucket: users-api-java-jar
-        S3Key: users-api-java-1.4.0.jar
+        S3Key: users-api-java-1.3.0.jar
       Environment:
         Variables:
           TABLE_NAME: users
@@ -216,7 +216,7 @@ Resources:
       Role: !GetAtt DeleteUserExecutionRole.Arn
       Code:
         S3Bucket: users-api-java-jar
-        S3Key: users-api-java-1.4.0.jar
+        S3Key: users-api-java-1.3.0.jar
       Environment:
         Variables:
           TABLE_NAME: users
@@ -232,7 +232,7 @@ Resources:
       Role: !GetAtt SendEmailExecutionRole.Arn
       Code:
         S3Bucket: users-api-java-jar
-        S3Key: users-api-java-1.4.0.jar
+        S3Key: users-api-java-1.3.0.jar
       Environment:
         Variables:
           TOPIC_ARN: !Ref UserEventsTopic
